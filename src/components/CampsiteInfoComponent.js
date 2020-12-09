@@ -19,26 +19,25 @@ function RenderCampsite({ campsite }) {
     )
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, campsiteId }) {
     if (comments) {
         return (
             <div className='col-md-5 m-1'>
                 <h4>Comments</h4>
-                {comments.map(comment =>
-                    <div>
-                        {comment.text}
-                        <p>
-                            -- {comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}
-                        </p>
-                    </div>
-                )}
-                <CommentForm />
+                {comments.map(comment => {
+                return (
+                        <div key={comment.id}>
+                            <p>{comment.text}<br />
+                                -- {comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}
+                            </p>
+                        </div>
+                    );
+                })}
+                <CommentForm campsiteId={campsiteId} addComment={addComment} />
             </div>
         );
     }
-    return (
-        <div></div>
-    )
+    return <div />;
 }
 
 class CommentForm extends Component 
@@ -58,32 +57,34 @@ class CommentForm extends Component
     }
 
     handleSubmit(values) {
-        console.log({ values });
-        alert("Current State is: " + JSON.stringify(values));
+        this.toggleModal();
+        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text);
     }
 
     render() {
         return (
             <div>
-                <Button onClick={this.toggleModal} type="button" className="btn btn-light btn-outline-secondary"><i className="fa fa-pencil"></i> Submit Comment</Button>
+                <Button outline onClick={this.toggleModal} type="button" className="btn btn-light btn-outline-secondary">
+                    <i className="fa fa-pencil" /> Submit Comment
+                </Button>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
                     <ModalBody>
                         <LocalForm onSubmit={values => this.handleSubmit(values)}>
-                        <div className="form-group">
-                            <Label htmlFor="rating" id="rating">Rating</Label>
-                            <Control.select model=".rating" className="form-control">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </Control.select>
-                        </div>
+                            <div className="form-group">
+                                <Label htmlFor="rating" id="rating">Rating</Label>
+                                <Control.select model=".rating" className="form-control">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </Control.select>
+                            </div>
                             <div className="form-group">
                                 <Label htmlFor="author">Your Name</Label>
-                                <Control.text model=".author" id="author" name="author" placeholder="Your Name"
-                                    className="form-control"
+                                <Control.text 
+                                    model=".author" id="author" name="author" placeholder="Your Name" className="form-control" 
                                     validators={{
                                         required,
                                         minLength: minLength(2),
@@ -104,8 +105,8 @@ class CommentForm extends Component
                             </div>
                             <div className="form-group">
                                 <Label htmlFor="text" id="author">Comment</Label>
-                                <Control.textarea model=".text" rows="6" id="text"
-                                    className="form-control"
+                                <Control.textarea 
+                                    model=".text" rows="6" id="text" className="form-control"
                                 />
                             </div>
                             <Button onClick={this.alert} className="btn btn-primary">Submit Comment</Button>
@@ -133,9 +134,13 @@ export default function CampsiteInfo(props) {
                 </div>
                 <div className="row">
                     <RenderCampsite campsite={props.campsite} />
-                    <RenderComments comments={props.comments} />
+                    <RenderComments
+                        comments={props.comments} 
+                        addComment={props.addComment}
+                        campsiteId={props.campsite.id}
+                    />
                 </div>
             </div>
         );
-    } return <div></div>
+    } return <div />;
 }
