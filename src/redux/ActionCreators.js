@@ -1,14 +1,9 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
 
-export const addComment = (campsiteId, rating, author, text) => ({
+export const addComment = comment => ({
     type: ActionTypes.ADD_COMMENT,
-    payload: {
-        campsiteId: campsiteId,
-        rating: rating,
-        author: author,
-        text: text
-    }
+    payload: comment
 });
 
 export const fetchCampsites = () => dispatch => {
@@ -71,11 +66,6 @@ export const fetchComments = () => dispatch => {
 export const commentsFailed = errMess => ({
     type: ActionTypes.COMMENTS_FAILED,
     payload: errMess
-});
-
-export const addComments = comments=> ({
-    type: ActionTypes.ADD_COMMENTS,
-    payload: commentsFailed
 });
 
 export const fetchPromotions = () => dispatch => {
